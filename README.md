@@ -13,13 +13,12 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/test1_undistorted.jpg "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/test1_binary_combo.jpg "Binary Example"
-[image4]: ./examples/test1_warped.jpg "Warp Example"
-[image5]: ./examples/test1_color_fit_lines.jpg "Fit Visual"
-[image6]: ./test_images_output/test1.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
+[image1]: (/examples/test1_undistorted.jpg) "Undistorted"
+[image2]: (/test_images/test1.jpg) "Road Transformed"
+[image3]: /examples/test1_binary_combo.jpg "Binary Example"
+[image4]: /examples/test1_warped.jpg "Warp Example"
+[image5]: /examples/test1_color_fit_lines.jpg "Fit Visual"
+[image6]: /test_images_output/test1.jpg "Output"
 ---
 
 ### Writeup / README
@@ -35,7 +34,7 @@ I start by preparing "object points", which will be the (x, y, z) coordinates of
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  
 I applied this distortion correction with the values gotten from `cv2.calibrateCamera()` on line #227 whenever I start trying to detect the lane in an image. Using `cv2.undistort()` on test_images/test1.jpg yields this result:
 
-![alt text][image1]
+!["Undistorted"](/examples/test1_undistorted.jpg)
 
 
 ### Pipeline (single images)
@@ -44,16 +43,16 @@ I applied this distortion correction with the values gotten from `cv2.calibrateC
 
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
 ###### Starting image:
-![alt text][image2]
+!["Road Transformed"](/test_images/test1.jpg)
 ###### Undistorted:
-![alt text][image1]
+!["Undistorted"](/examples/test1_undistorted.jpg)
 
 #### 2. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
 The code for my perspective transform includes a function called `warp`, which appears in lines #1 through #8 in the file `DetectLane.py` .The `warp` function takes as inputs an image (`img`), as well as if you are going to a top down view or back to start view(for when you want to overlay over original image). I started testing some points and ultimately figured out the points I used for `src` and  `dst` to work well.
 
 ###### Top down view:
-![alt text][image4]
+!["Warp Example"](/examples/test1_warped.jpg)
 
 #### 3. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
@@ -61,13 +60,13 @@ I used a combination of color and gradient thresholds to generate a binary image
 Here's an example of my output for this step.(in this image the pixels identified by sobelX and a threshold are green, and the ones from a theshold on the S channel are red, in the program they are all made white before detecting the polynomials)
 
 ###### Binary Image:
-![alt text][image3]
+!["Binary Example"](/examples/test1_binary_combo.jpg)
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
 A function called `getPoly`, lines #165 to #195 of `DetectLane.py`, is then called, it excepts an image, `img` and 2 arguments `leftPoly`, `rightPoly`(the coefficients for the polynomials found in the previous frame, or `None` if first frame of video or no previous image). This function will run a `slidingWindows` search to collect pixels to try and fit the polynomial to if  `leftPoly` or `rightPoly` are `None`, otherwise it will run `searchFromPrior` with `leftPoly` and `rightPoly` to collect those pixels to fit from around the polynomials passed in. From there it will come up with the coefficients for a polynomial to fit the collected pixels using `np.polyfit` it will then return these polynomials(and a visualization if you want one)(all polynomials here are 2nd degree):
 
-![alt text][image5]
+!["Fit Visual"](/examples/test1_color_fit_lines.jpg)
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
@@ -78,7 +77,7 @@ I did this in `getCurvature`, lines #208 through #216 of `DetectLane.py`. I use 
 
 I implemented this step in the `detectLane` function, line #233 of  `DetectLane.py`, I call my `fillLane` function, lines #218 to #226 of `DetectLane.py`, passing it the binary image(`img`), `leftPoly`, and `rightPoly`, it then colors all points between the 2 polynomials that identify the lane lines green and everything else black and returning the resulting image. I then use `warp` this time with `top=False` so that it applies a perspective transform that reverses the one we did earlier to get a topdown view of the road so that now it is back as it was in the original undistorted image, I then use `cv2.addWeighted` to overlay this onto the undistorted image and return that.   Here is an example of my result on a test image:
 
-![alt text][image6]
+!["Output"](/test_images_output/test1.jpg)
 
 ---
 
